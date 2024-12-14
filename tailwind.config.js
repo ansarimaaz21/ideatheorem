@@ -13,6 +13,7 @@ export default withMT({
       colors: {
         'base': "#252F3D",
         'input-label': "#333333",
+        'primary': "#127C95"
       },
       fontFamily: {
         'lato': ['lato', 'sans-serif'],
