@@ -1,11 +1,11 @@
+import React, { useState } from 'react'
 import { Alert, Button, Input, Typography } from '@material-tailwind/react'
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import { ApiResponse, createUser } from '../api';
 import crossIcon from '../assets/icons/outline-cross.svg'
 import successIcon from '../assets/icons/outline-info.svg'
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import React, { useState } from 'react'
-import { ApiResponse, createUser } from '../api';
 
 interface FormData {
     full_name: string;
