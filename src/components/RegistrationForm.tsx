@@ -103,7 +103,7 @@ const RegistrationForm: React.FC = () => {
                 }
                 <form onSubmit={handleSubmit(onSubmit)} className='max-w-lg w-full'>
                     <h1 className="pl-7 sm:pl-0 text-xl font-semibold text-gray-800 mb-4">Create Your Account</h1>
-                    <div className='shadow-[0_4px_30px_0px_#00000014] h-[calc(100%-8rem)] md:h-auto overflow-y-scroll md:overflow-y-auto rounded-lg p-7 sm:p-10'>
+                    <div className='shadow-[0_4px_30px_0px_#00000014] h-[calc(100%-12.5rem)] md:h-auto overflow-y-scroll md:overflow-y-auto rounded-lg p-7 sm:p-10'>
                         <div className="flex flex-col gap-4">
                             <div className='flex flex-col gap-2'>
                                 <Typography variant="paragraph" className="text-input-label text-[16px] font-bold">
