@@ -25,7 +25,7 @@ export const createUser = async (payload: UserPayload): Promise<ApiResponse> => 
         return {
             dev_message: "error",
             title: "Error",
-            description: error.response?.data?.description || "An unexpected error occurred.",
+            description: error?.response?.data?.description || "Something went wrong.",
         };
     }
 };

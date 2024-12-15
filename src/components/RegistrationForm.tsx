@@ -1,9 +1,10 @@
-import { Alert, Button, Input, Option, Typography } from '@material-tailwind/react'
+import { Alert, Button, Input, Typography } from '@material-tailwind/react'
 import { useForm } from "react-hook-form";
+import crossIcon from '../assets/icons/outline-cross.svg'
+import successIcon from '../assets/icons/outline-info.svg'
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import React, { useState } from 'react'
-import { MdOutlineKeyboardArrowDown } from 'react-icons/md';
 import { ApiResponse, createUser } from '../api';
 
 interface FormData {
@@ -41,20 +42,22 @@ const schema = yup.object({
         }),
     password: yup
         .string()
-        .required("Password is required"),
-    // .matches(/[A-Z]/, "Must contain at least one uppercase letter")
-    // .matches(/[a-z]/, "Must contain at least one lowercase letter")
-    // .matches(/[0-9]/, "Must contain at least one number"),
-    // .min(8, "Password must be at least 8 characters long"),
+        .required("Password is required")
+        .matches(/[A-Z]/, "Must contain at least one uppercase letter")
+        .matches(/[a-z]/, "Must contain at least one lowercase letter")
+        .matches(/[0-9]/, "Must contain at least one number")
+        .min(8, "Password must be at least 8 characters long"),
     confirm_password: yup
         .string()
         .required("Confirm Password is required")
         .oneOf([yup.ref("password")], "Password and Confirm Password must match"),
 });
 
+const ALERT_DISMISS = 5000 // in milliseconds
+
 const RegistrationForm: React.FC = () => {
 
-    const [apiResponse, setApiResponse] = useState<ApiResponse | null>(true);
+    const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
 
 
     const {
@@ -64,8 +67,6 @@ const RegistrationForm: React.FC = () => {
     } = useForm<FormData>({
         resolver: yupResolver(schema),
     });
-
-    console.log('errors->', errors)
 
     const onSubmit = async (data: FormData) => {
         const date_of_birth = `${data.day}-${data.month}-${data.year}`;
@@ -78,27 +79,31 @@ const RegistrationForm: React.FC = () => {
         };
         const response = await createUser(payload);
         setApiResponse(response);
-        console.log('payload->', payload)
+        setTimeout(() => {
+            setApiResponse(null);
+        }, ALERT_DISMISS);
     }
 
     return (
         <>
-
-            {/* <Alert
-                className={`absolute w-[27rem] ${apiResponse?.title === "Success" ? "bg-green-700" : "bg-red-700"}`}
-            >
-                <p>{apiResponse?.description || 'Hello'}</p>
-            </Alert> */}
-            <div className="min-h-screen flex font-lato mt-12 justify-center">
+            <div className="flex font-lato mt-12 justify-center">
                 {
-                    apiResponse &&
-                    <Alert className={`absolute md:right-10 lg:right-20 w-[27rem] ${apiResponse.title == "Success" ? "bg-[#CDFADC]" : "bg-[#FFC0C0]"}`}>{apiResponse?.description}</Alert>
+                    apiResponse?.title &&
+                    <Alert className={`absolute z-10 bottom-[9.5rem] w-11/12 md:bottom-auto md:right-10 lg:right-20 md:w-[27rem] ${apiResponse?.title == "Success" ? "bg-[#CDFADC]" : "bg-[#FFC0C0]"}`}>
+                        <div className="flex gap-3 text-[#333333] font-bold">
+                            {
+                                apiResponse?.title == "Success" ?
+                                    <img src={successIcon} alt="success" />
+                                    :
+                                    <img src={crossIcon} alt="cross" />
+                            }
+                            {apiResponse?.description}
+                        </div>
+                    </Alert>
                 }
                 <form onSubmit={handleSubmit(onSubmit)} className='max-w-lg w-full'>
                     <h1 className="pl-7 sm:pl-0 text-xl font-semibold text-gray-800 mb-4">Create Your Account</h1>
-                    {/* {apiResponse && ( */}
-                    {/* )} */}
-                    <div className='shadow-[0_4px_30px_0px_#00000014] rounded-lg p-7 sm:p-10'>
+                    <div className='shadow-[0_4px_30px_0px_#00000014] h-[calc(100%-8rem)] md:h-auto overflow-y-scroll md:overflow-y-auto rounded-lg p-7 sm:p-10'>
                         <div className="flex flex-col gap-4">
                             <div className='flex flex-col gap-2'>
                                 <Typography variant="paragraph" className="text-input-label text-[16px] font-bold">
@@ -112,6 +117,7 @@ const RegistrationForm: React.FC = () => {
                                     label='Full Name'
                                     placeholder="Full Name"
                                     required
+                                    autoFocus
                                 />
                                 <Typography
                                     variant="small"
@@ -149,7 +155,7 @@ const RegistrationForm: React.FC = () => {
                                 <div className="flex flex-row gap-6">
                                     <select
                                         {...register("day")}
-                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.day?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6`}
+                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.day?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline sm:text-sm/6`}
                                     >
                                         <option value="">Day *</option>
                                         {
@@ -162,7 +168,7 @@ const RegistrationForm: React.FC = () => {
                                     </select>
                                     <select
                                         {...register("month")}
-                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.month?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6`}
+                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.month?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline sm:text-sm/6`}
                                     >
                                         <option value="">Month *</option>
                                         {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map(
@@ -175,7 +181,7 @@ const RegistrationForm: React.FC = () => {
                                     </select>
                                     <select
                                         {...register("year")}
-                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.year?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-black sm:text-sm/6`}
+                                        className={`col-start-1 h-11 w-full row-start-1 rounded-md bg-white py-1.5 pl-3 pr-8 text-base outline outline-1 -outline-offset-1 ${errors?.year?.message ? 'outline-red-500' : 'outline-blue-gray-200'} focus:outline sm:text-sm/6`}
                                     >
                                         <option value="">Year *</option>
                                         {[...Array(100)].map((_, i) => (
@@ -260,9 +266,9 @@ const RegistrationForm: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='flex justify-center items-center mt-11 gap-4'>
-                        <Button variant='outlined' className='border-primary w-36 text-primary capitalize font-lato font-bold text-md' type='submit'>Cancel</Button>
-                        <Button className='bg-primary w-36 capitalize font-lato font-bold text-md' type='submit'>Submit</Button>
+                    <div className='fixed bottom-0 left-0 z-50 w-full h-36 bg-white flex flex-col justify-center items-center gap-3 md:static md:h-auto md:flex-row md:justify-center md:items-center md:mt-11 md:gap-4'>
+                        <Button variant='outlined' className='border-primary w-11/12 md:w-36 text-primary capitalize font-lato font-bold text-md' type='submit'>Cancel</Button>
+                        <Button className='bg-primary w-11/12 md:w-36 capitalize font-lato font-bold text-md' type='submit'>Submit</Button>
                     </div>
                 </form>
             </div>
